@@ -1,0 +1,12 @@
+{
+  "dbConfig": {
+    "host": "localhost",
+    "name": "hackorsnooze",
+    "port": "27017",
+    "user": "",
+    "pass": "",
+    "options": {
+      "autoIndex": true
+    }
+  }
+}

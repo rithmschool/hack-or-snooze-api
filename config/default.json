@@ -1,0 +1,11 @@
+{
+  "dbConfig": {
+    "host": "",
+    "name": "",
+    "port": "",
+    "options": {
+      "useMongoClient": true,
+      "autoIndex": false
+    }
+  }
+}
