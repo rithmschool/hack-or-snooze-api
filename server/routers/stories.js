@@ -15,7 +15,7 @@ router
   .post(createStory);
 
 router
-  .route('/:id')
+  .route('/:storyId')
   .get(readStory)
   .patch(updateStory)
   .delete(deleteStory);
