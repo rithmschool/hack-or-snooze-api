@@ -2,17 +2,14 @@
 const express = require('express');
 
 // app imports
-const { userHandler } = require('../handlers');
+const { userHandler, usersHandler, favoritesHandler } = require('../handlers');
 
 // global constants
 const router = new express.Router();
-const {
-  readUser,
-  updateUser,
-  deleteUser,
-  addUserFavorite,
-  deleteUserFavorite
-} = userHandler;
+const { readUser, updateUser, deleteUser } = userHandler;
+const { readUsers } = usersHandler;
+const { addUserFavorite, deleteUserFavorite } = favoritesHandler;
+router.route('').get(readUsers);
 
 router
   .route('/:username')
@@ -20,8 +17,9 @@ router
   .patch(updateUser)
   .delete(deleteUser);
 
-router.route('/:username/favorites').post(addUserFavorite);
-
-router.route('/:username/favorites/:favoriteId').delete(deleteUserFavorite);
+router
+  .route('/:username/favorites/:storyId')
+  .post(addUserFavorite)
+  .delete(deleteUserFavorite);
 
 module.exports = router;

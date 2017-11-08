@@ -12,16 +12,20 @@ function validateSchema(validation, type) {
   if (!validation.valid) {
     errors = validation.errors.map(error => {
       if (error.name === 'additionalProperties') {
-        return `'${error.argument}' is an invalid ${type} attribute.`;
+        const immutableFields = {
+          username: 1,
+          favorites: 1,
+          stories: 1
+        };
+        if (immutableFields[error.argument]) {
+          return `The field '${error.argument}' is immutable at this endpoint`;
+        }
+        return `'${error.argument}' is an invalid ${type} attribute`;
       }
       return error.stack.replace(/"/g, "'").replace('instance.', '');
     });
 
-    return new APIError(
-      400,
-      'Bad Request',
-      `The following validation errors occurred: ${errors.join(', ')}.`
-    );
+    return new APIError(400, 'Bad Request', `${errors.join('; ')}.`);
   }
 }
 

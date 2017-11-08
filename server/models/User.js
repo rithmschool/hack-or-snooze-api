@@ -61,7 +61,7 @@ userSchema.statics = {
         return Promise.resolve({
           status: 200,
           title: 'User Deleted',
-          message: `User ${username} successfully deleted.`
+          message: `User '${username}' successfully deleted.`
         });
       })
       .catch(error => Promise.reject(processDBError(error)));
@@ -88,24 +88,21 @@ userSchema.statics = {
   },
   /**
    * Get a list of Users
-   * @param {object} query - pre-formatted query to retrieve things.
+   * @param {Object} query - pre-formatted query to retrieve things.
+   * @param {Object} fields - a list of fields to select or not in object form
    * @param {String} skip - number of docs to skip (for pagination)
    * @param {String} limit - number of docs to limit by (for pagination)
    * @returns {Promise<Users, APIError>}
    */
-  readAll(query, skip, limit) {
-    return this.find(query)
+  readUsers(query, fields, skip, limit) {
+    return this.find(query, fields)
       .skip(skip)
       .limit(limit)
       .sort({ username: 1 })
       .exec()
       .then(users => {
         if (users.length === 0) {
-          throw new APIError(
-            404,
-            'No Users Found',
-            'No users found matching your query.'
-          );
+          return [];
         }
         return users.map(user => user.toObject()); // proper formatting
       })
@@ -119,6 +116,38 @@ userSchema.statics = {
    */
   updateUser(username, userUpdate) {
     return this.findOneAndUpdate({ username }, userUpdate, { new: true })
+      .exec()
+      .then(user => {
+        if (!user) {
+          throw new APIError(
+            404,
+            'User Not Found',
+            `No user with username '${username}' found.`
+          );
+        }
+        return user.toObject();
+      })
+      .catch(error => Promise.reject(processDBError(error)));
+  },
+
+  /**
+   * A function to add or remove favorites from the set of
+   *  user favorites. Note: favorites are storyIds.
+   * @param {String} username 
+   * @param {String} favoriteId aka storyId
+   * @param {String} action 'add' or 'delete'
+   * @return {Promise} User
+   */
+  addOrDeleteFavorite(username, favoriteId, action) {
+    const actions = {
+      add: '$addToSet',
+      delete: '$pull'
+    };
+    return this.findOneAndUpdate(
+      { username },
+      { [actions[action]]: { favorites: favoriteId } },
+      { new: true }
+    )
       .exec()
       .then(user => {
         if (!user) {

@@ -67,7 +67,7 @@ storySchema.statics = {
    * @param {String} storyId
    * @returns {Promise<Story, APIError>}
    */
-  readStories(storyId) {
+  readStory(storyId) {
     return this.findOne({ storyId })
       .exec()
       .then(story => {
@@ -84,24 +84,21 @@ storySchema.statics = {
   },
   /**
    * Get a list of Stories
-   * @param {object} query - pre-formatted query to retrieve things.
+   * @param {Object} query - pre-formatted query to retrieve things.
+   * @param {Object} fields - a list of fields to select or not in object form
    * @param {String} skip - number of docs to skip (for pagination)
    * @param {String} limit - number of docs to limit by (for pagination)
    * @returns {Promise<Stories, APIError>}
    */
-  readAllStories(query, skip, limit) {
-    return this.find(query)
+  readStories(query, fields, skip, limit) {
+    return this.find(query, fields)
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: 1 })
       .exec()
       .then(stories => {
         if (stories.length === 0) {
-          throw new APIError(
-            404,
-            'No Stories Found',
-            'No stories found matching your query.'
-          );
+          return [];
         }
         return stories.map(story => story.toObject()); // proper formatting
       })

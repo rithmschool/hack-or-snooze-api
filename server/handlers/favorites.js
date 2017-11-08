@@ -1,17 +1,12 @@
-// npm packages
-const { Validator } = require('jsonschema');
-
 // app imports
 const { User, Story } = require('../models');
-const { APIError, formatResponse, validateSchema } = require('../helpers');
-const { userUpdate } = require('../schemas');
+const { formatResponse } = require('../helpers');
 
-// global constants
-const v = new Validator();
-
-function readUser(request, response, next) {
-  const username = request.params.username;
+function addUserFavorite(request, response, next) {
+  const { username, storyId } = request.params;
   return User.readUser(username)
+    .then(() => Story.readStory(storyId))
+    .then(() => User.addOrDeleteFavorite(username, storyId, 'add'))
     .then(user => {
       // application-level join to include stories and favorites under User
       Promise.all([
@@ -26,16 +21,11 @@ function readUser(request, response, next) {
     .catch(err => next(err));
 }
 
-function updateUser(request, response, next) {
-  const { username } = request.params;
-  const validationErrors = validateSchema(
-    v.validate(request.body, userUpdate),
-    'user'
-  );
-  if (validationErrors instanceof APIError) {
-    return next(validationErrors);
-  }
-  return User.updateUser(username, request.body.data)
+function deleteUserFavorite(request, response, next) {
+  const { username, storyId } = request.params;
+  return User.readUser(username)
+    .then(() => Story.readStory(storyId))
+    .then(() => User.addOrDeleteFavorite(username, storyId, 'delete'))
     .then(user => {
       // application-level join to include stories and favorites under User
       Promise.all([
@@ -47,16 +37,10 @@ function updateUser(request, response, next) {
         return response.json(formatResponse(user));
       });
     })
-    .catch(err => next(err));
-}
-function deleteUser(request, response, next) {
-  return User.deleteUser(request.params.username)
-    .then(user => response.json(formatResponse(user)))
     .catch(err => next(err));
 }
 
 module.exports = {
-  readUser,
-  updateUser,
-  deleteUser
+  addUserFavorite,
+  deleteUserFavorite
 };
