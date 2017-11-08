@@ -6,12 +6,7 @@ async function readUsers(request, response, next) {
   let skip = request.query.skip || 0;
   let limit = request.query.limit || 50;
   try {
-    const users = await User.readUsers(
-      {},
-      ['name', 'username', 'createdAt', 'updatedAt', 'favorites'],
-      skip,
-      limit
-    );
+    const users = await User.readUsers({}, { password: 0 }, skip, limit);
     const finalUsers = await Promise.all(
       users.map(async user => {
         const stories = await Story.readStories(

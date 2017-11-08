@@ -32,13 +32,15 @@
           "maxLength": 55
         }, 
         "url": {
-          "type": "string", 
+          "type": "string",
+          "format": "uri",
           "id": "/properties/data/properties/url", 
           "minLength": 1, 
           "maxLength": 55
         }, 
         "username": {
-          "type": "string", 
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$",
           "id": "/properties/data/properties/username", 
           "minLength": 1, 
           "maxLength": 55

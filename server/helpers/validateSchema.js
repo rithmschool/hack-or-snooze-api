@@ -11,18 +11,25 @@ function validateSchema(validation, type) {
 
   if (!validation.valid) {
     errors = validation.errors.map(error => {
-      if (error.name === 'additionalProperties') {
-        const immutableFields = {
-          username: 1,
-          favorites: 1,
-          stories: 1
-        };
-        if (immutableFields[error.argument]) {
-          return `The field '${error.argument}' is immutable at this endpoint`;
+      switch (error.name) {
+        case 'additionalProperties': {
+          const immutableFields = {
+            username: 1,
+            favorites: 1,
+            stories: 1
+          };
+          if (immutableFields[error.argument]) {
+            return `The field '${error.argument}' is immutable at this endpoint`;
+          }
+          return `'${error.argument}' is an invalid ${type} attribute`;
         }
-        return `'${error.argument}' is an invalid ${type} attribute`;
+        case 'pattern':
+          return `The ${error.property
+            .split('.')
+            .pop()} field only supports letters and numbers`;
+        default:
+          return error.stack.replace(/"/g, "'").replace('instance.', '');
       }
-      return error.stack.replace(/"/g, "'").replace('instance.', '');
     });
 
     return new APIError(400, 'Bad Request', `${errors.join('; ')}.`);

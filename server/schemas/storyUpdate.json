@@ -26,7 +26,8 @@
           "maxLength": 55
         }, 
         "url": {
-          "type": "string", 
+          "type": "string",
+          "format": "uri",          
           "id": "/properties/data/properties/url", 
           "minLength": 1, 
           "maxLength": 55
