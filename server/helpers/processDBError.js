@@ -9,6 +9,7 @@ function processDBError(dbError) {
       `Internal Database Error: ${error}`
     );
   }
+  return error;
 }
 
 module.exports = processDBError;

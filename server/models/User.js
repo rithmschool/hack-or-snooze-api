@@ -9,7 +9,7 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
-    favorites: [{ type: Schema.Types.ObjectId, ref: 'Story' }],
+    favorites: [String],
     name: String,
     password: String,
     username: {
@@ -27,7 +27,7 @@ userSchema.statics = {
    * @returns {Promise<User, APIError>}
    */
   createUser(newUser) {
-    return this.findOne(newUser.username)
+    return this.findOne({ username: newUser.username })
       .exec()
       .then(user => {
         if (user) {

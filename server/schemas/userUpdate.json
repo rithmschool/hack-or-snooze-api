@@ -1,0 +1,48 @@
+{
+  "definitions": {}, 
+  "$schema": "http://json-schema.org/draft-06/schema#", 
+  "type": "object", 
+  "id": "/", 
+  "additionalProperties": false, 
+  "required": [
+    "data"
+  ], 
+  "properties": {
+    "data": {
+      "type": "object", 
+      "id": "/properties/data", 
+      "additionalProperties": false, 
+      "properties": {
+        "favorites": {
+          "type": "array", 
+          "id": "/properties/data/properties/favorites", 
+          "minItems": 1, 
+          "items": {
+            "type": "string", 
+            "id": "/properties/data/properties/favorites/items", 
+            "minLength": 1, 
+            "maxLength": 55
+          }
+        }, 
+        "name": {
+          "type": "string", 
+          "id": "/properties/data/properties/name", 
+          "minLength": 1, 
+          "maxLength": 55
+        }, 
+        "password": {
+          "type": "string", 
+          "id": "/properties/data/properties/password", 
+          "minLength": 1, 
+          "maxLength": 55
+        }, 
+        "username": {
+          "type": "string", 
+          "id": "/properties/data/properties/username", 
+          "minLength": 1, 
+          "maxLength": 55
+        }
+      }
+    }
+  }
+}

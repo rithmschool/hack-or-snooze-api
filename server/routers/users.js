@@ -7,8 +7,6 @@ const { userHandler } = require('../handlers');
 // global constants
 const router = new express.Router();
 const {
-  login,
-  signup,
   readUser,
   updateUser,
   deleteUser,
@@ -16,18 +14,14 @@ const {
   deleteUserFavorite
 } = userHandler;
 
-router.route('/login').post(login);
-
-router.route('/signup').post(signup);
-
 router
-  .route('/:userId')
+  .route('/:username')
   .get(readUser)
   .patch(updateUser)
   .delete(deleteUser);
 
-router.route('/:userId/favorites').post(addUserFavorite);
+router.route('/:username/favorites').post(addUserFavorite);
 
-router.route('/:userId/favorites/:favoriteId').delete(deleteUserFavorite);
+router.route('/:username/favorites/:favoriteId').delete(deleteUserFavorite);
 
 module.exports = router;

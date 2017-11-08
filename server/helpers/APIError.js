@@ -32,9 +32,11 @@ class APIError extends ExtendableError {
   toJSON() {
     const { status, title, message } = this;
     return {
-      status,
-      title,
-      message
+      error: {
+        status,
+        title,
+        message
+      }
     };
   }
 }

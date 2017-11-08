@@ -17,7 +17,10 @@ const storySchema = new Schema(
     },
     title: String,
     url: String,
-    userId: { type: Schema.Types.ObjectId, ref: 'User' }
+    username: {
+      type: String,
+      index: true
+    }
   },
   { timestamps: true }
 );
@@ -37,91 +40,91 @@ storySchema.statics = {
   },
   /**
    * Delete a single Story
-   * @param {String} username
+   * @param {String} storyId
    * @returns {Promise<Success Message, APIError>}
    */
-  deleteUser(username) {
-    return this.findOneAndRemove({ username })
+  deleteStory(storyId) {
+    return this.findOneAndRemove({ storyId })
       .exec()
-      .then(user => {
-        if (!user) {
+      .then(story => {
+        if (!story) {
           throw new APIError(
             404,
-            'User Not Found',
-            `No user '${username}' found.`
+            'Story Not Found',
+            `No story with ID '${storyId}' found.`
           );
         }
         return Promise.resolve({
           status: 200,
-          title: 'User Deleted',
-          message: `User ${username} successfully deleted.`
+          title: 'Story Deleted',
+          message: `Story with ID '${storyId}' successfully deleted.`
         });
       })
       .catch(error => Promise.reject(processDBError(error)));
   },
   /**
-   * Get a single User by username
-   * @param {String} username
-   * @returns {Promise<User, APIError>}
+   * Get a single Story by storyId
+   * @param {String} storyId
+   * @returns {Promise<Story, APIError>}
    */
-  readUser(username) {
-    return this.findOne({ username })
+  readStories(storyId) {
+    return this.findOne({ storyId })
       .exec()
-      .then(user => {
-        if (!user) {
+      .then(story => {
+        if (!story) {
           throw new APIError(
             404,
-            'User Not Found',
-            `No user '${username}' found.`
+            'Story Not Found',
+            `No story with ID '${storyId}' found.`
           );
         }
-        return user.toObject();
+        return story.toObject();
       })
       .catch(error => Promise.reject(processDBError(error)));
   },
   /**
-   * Get a list of Users
+   * Get a list of Stories
    * @param {object} query - pre-formatted query to retrieve things.
    * @param {String} skip - number of docs to skip (for pagination)
    * @param {String} limit - number of docs to limit by (for pagination)
-   * @returns {Promise<Users, APIError>}
+   * @returns {Promise<Stories, APIError>}
    */
-  readAll(query, skip, limit) {
+  readAllStories(query, skip, limit) {
     return this.find(query)
       .skip(skip)
       .limit(limit)
-      .sort({ username: 1 })
+      .sort({ createdAt: 1 })
       .exec()
-      .then(users => {
-        if (users.length === 0) {
+      .then(stories => {
+        if (stories.length === 0) {
           throw new APIError(
             404,
-            'No Users Found',
-            'No users found matching your query.'
+            'No Stories Found',
+            'No stories found matching your query.'
           );
         }
-        return users.map(user => user.toObject()); // proper formatting
+        return stories.map(story => story.toObject()); // proper formatting
       })
       .catch(error => Promise.reject(processDBError(error)));
   },
   /**
-   * Patch/Update a single User
-   * @param {String} username - the User's name
-   * @param {Object} userUpdate - the json containing the User attributes
-   * @returns {Promise<User, APIError>}
+   * Patch/Update a single Story
+   * @param {String} storyId
+   * @param {Object} storyUpdate - the json containing the Story attributes
+   * @returns {Promise<Story, APIError>}
    */
-  updateUser(username, userUpdate) {
-    return this.findOneAndUpdate({ username }, userUpdate, { new: true })
+  updateStory(storyId, storyUpdate) {
+    return this.findOneAndUpdate({ storyId }, storyUpdate, { new: true })
       .exec()
-      .then(user => {
-        if (!user) {
+      .then(story => {
+        if (!story) {
           throw new APIError(
             404,
-            'User Not Found',
-            `No user with username '${username}' found.`
+            'Story Not Found',
+            `No story with ID '${storyId}' found.`
           );
         }
-        return user.toObject();
+        return story.toObject();
       })
       .catch(error => Promise.reject(processDBError(error)));
   }

@@ -1,0 +1,43 @@
+{
+  "definitions": {}, 
+  "$schema": "http://json-schema.org/draft-06/schema#", 
+  "type": "object", 
+  "id": " ", 
+  "additionalProperties": false, 
+  "required": [
+    "data"
+  ], 
+  "properties": {
+    "data": {
+      "type": "object", 
+      "id": "/properties/data", 
+      "additionalProperties": false,  
+      "properties": {
+        "author": {
+          "type": "string", 
+          "id": "/properties/data/properties/author", 
+          "minLength": 1, 
+          "maxLength": 55
+        }, 
+        "title": {
+          "type": "string", 
+          "id": "/properties/data/properties/title", 
+          "minLength": 1, 
+          "maxLength": 55
+        }, 
+        "url": {
+          "type": "string", 
+          "id": "/properties/data/properties/url", 
+          "minLength": 1, 
+          "maxLength": 55
+        }, 
+        "username": {
+          "type": "string", 
+          "id": "/properties/data/properties/username", 
+          "minLength": 1, 
+          "maxLength": 55
+        }
+      }
+    }
+  }
+}
