@@ -136,7 +136,7 @@ userSchema.statics = {
    * @param {String} username 
    * @param {String} favoriteId aka storyId
    * @param {String} action 'add' or 'delete'
-   * @return {Promise} User
+   * @return {Promise<User>}
    */
   addOrDeleteFavorite(username, favoriteId, action) {
     const actions = {

@@ -1,9 +1,0 @@
-{
-  "dbConfig": {
-    "host": "DB_HOST",
-    "name": "DB",
-    "port": "DB_PORT",
-    "user": "DB_USER",
-    "pass": "DB_PASS"
-  }
-}

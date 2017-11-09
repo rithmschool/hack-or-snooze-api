@@ -1,2 +1,2 @@
-exports.stories = require('./stories');
-exports.users = require('./users');
+exports.storiesRouter = require('./stories');
+exports.usersRouter = require('./users');

@@ -2,24 +2,33 @@
 const express = require('express');
 
 // app imports
-const { userHandler, usersHandler, favoritesHandler } = require('../handlers');
+const {
+  authRequired,
+  userHandler,
+  usersHandler,
+  favoritesHandler
+} = require('../handlers');
 
 // global constants
 const router = new express.Router();
-const { readUser, updateUser, deleteUser } = userHandler;
+const { createUser, readUser, updateUser, deleteUser } = userHandler;
 const { readUsers } = usersHandler;
 const { addUserFavorite, deleteUserFavorite } = favoritesHandler;
-router.route('').get(readUsers);
+
+router
+  .route('')
+  .get(authRequired, readUsers)
+  .post(createUser);
 
 router
   .route('/:username')
-  .get(readUser)
-  .patch(updateUser)
-  .delete(deleteUser);
+  .get(authRequired, readUser)
+  .patch(authRequired, updateUser)
+  .delete(authRequired, deleteUser);
 
 router
   .route('/:username/favorites/:storyId')
-  .post(addUserFavorite)
-  .delete(deleteUserFavorite);
+  .post(authRequired, addUserFavorite)
+  .delete(authRequired, deleteUserFavorite);
 
 module.exports = router;

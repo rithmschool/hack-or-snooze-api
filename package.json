@@ -29,9 +29,10 @@
   },
   "dependencies": {
     "body-parser": "1.18.2",
-    "config": "1.27.0",
+    "dotenv": "^4.0.0",
     "express": "4.16.2",
-    "jsonschema": "^1.2.0",
+    "jsonschema": "1.2.0",
+    "jsonwebtoken": "8.1.0",
     "mongoose": "4.13.0",
     "nodemon": "1.12.1",
     "pm2": "2.7.2",

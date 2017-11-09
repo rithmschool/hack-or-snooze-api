@@ -1,15 +1,17 @@
 // npm packages
 const bodyParser = require('body-parser');
-const config = require('config');
+const dotenv = require('dotenv');
 const express = require('express');
 const mongoose = require('mongoose');
 Promise = require('bluebird'); // eslint-disable-line
 
 // app imports
-const { errorHandler, signupLoginHandler } = require('./handlers');
-const { stories, users } = require('./routers');
+const { mongoDBConfig } = require('./config');
+const { authHandler, errorHandler } = require('./handlers');
+const { storiesRouter, usersRouter } = require('./routers');
 
 // global constants
+dotenv.config();
 const app = express();
 const PORT = 5000;
 const {
@@ -18,12 +20,11 @@ const {
   fourOhFourHandler,
   fourOhFiveHandler
 } = errorHandler;
-const { login, signup } = signupLoginHandler;
 
 // database
 mongoose.Promise = Promise;
 mongoose.set('debug', true);
-const { host, name, options } = config.get('dbConfig');
+const { host, name, options } = mongoDBConfig;
 mongoose.connect(`mongodb://${host}/${name}`, options);
 
 // body parser setup
@@ -41,10 +42,9 @@ app.use((request, response, next) => {
   return next();
 });
 
-app.use('/stories', stories);
-app.post('/login', login);
-app.post('/signup', signup);
-app.use('/users', users);
+app.post('/auth', authHandler);
+app.use('/stories', storiesRouter);
+app.use('/users', usersRouter);
 app.get('*', fourOhFourHandler); // catch-all for 404 "Not Found" errors
 app.all('*', fourOhFiveHandler); // catch-all for 405 "Method Not Allowed" errors
 app.use(globalErrorHandler);

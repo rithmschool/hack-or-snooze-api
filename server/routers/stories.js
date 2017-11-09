@@ -2,7 +2,7 @@
 const express = require('express');
 
 // app imports
-const { storyHandler, storiesHandler } = require('../handlers');
+const { authRequired, storyHandler, storiesHandler } = require('../handlers');
 
 // global constants
 const router = new express.Router();
@@ -12,12 +12,12 @@ const { readStories } = storiesHandler;
 router
   .route('')
   .get(readStories)
-  .post(createStory);
+  .post(authRequired, createStory);
 
 router
   .route('/:storyId')
   .get(readStory)
-  .patch(updateStory)
-  .delete(deleteStory);
+  .patch(authRequired, updateStory)
+  .delete(authRequired, deleteStory);
 
 module.exports = router;

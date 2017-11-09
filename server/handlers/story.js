@@ -3,15 +3,20 @@ const { Validator } = require('jsonschema');
 
 // app imports
 const { User, Story } = require('../models');
-const { APIError, formatResponse, validateSchema } = require('../helpers');
-const { storyNew, storyUpdate } = require('../schemas');
+const {
+  APIError,
+  ensureCorrectUser,
+  formatResponse,
+  validateSchema
+} = require('../helpers');
+const { storyNewSchema, storyUpdateSchema } = require('../schemas');
 
 // global constants
 const v = new Validator();
 
 function createStory(request, response, next) {
   const validationErrors = validateSchema(
-    v.validate(request.body, storyNew),
+    v.validate(request.body, storyNewSchema),
     'story'
   );
   if (validationErrors instanceof APIError) {
@@ -30,20 +35,42 @@ function readStory(request, response, next) {
 }
 
 function updateStory(request, response, next) {
+  const { storyId } = request.params.storyId;
   const validationErrors = validateSchema(
-    v.validate(request.body, storyUpdate),
+    v.validate(request.body, storyUpdateSchema),
     'story'
   );
   if (validationErrors instanceof APIError) {
     return next(validationErrors);
   }
-  return Story.updateStory(request.params.storyId, request.body.data)
+  return Story.readStory(storyId)
+    .then(story => {
+      const correctUser = ensureCorrectUser(
+        request.headers.authorization,
+        story.username
+      );
+      if (correctUser instanceof APIError) {
+        return next(correctUser);
+      }
+    })
+    .then(() => Story.updateStory(storyId, request.body.data))
     .then(story => response.json(formatResponse(story)))
     .catch(err => next(err));
 }
 
 function deleteStory(request, response, next) {
-  return Story.deleteStory(request.params.storyId)
+  const { storyId } = request.params.storyId;
+  return Story.readStory(storyId)
+    .then(story => {
+      const correctUser = ensureCorrectUser(
+        request.headers.authorization,
+        story.username
+      );
+      if (correctUser instanceof APIError) {
+        return next(correctUser);
+      }
+    })
+    .then(() => Story.deleteStory(storyId))
     .then(story => response.json(formatResponse(story)))
     .catch(err => next(err));
 }
