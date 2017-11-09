@@ -8,5 +8,8 @@
     "options": {
       "autoIndex": false
     }
+  },
+  "jwt": {
+    "secretKey": ""
   }
 }

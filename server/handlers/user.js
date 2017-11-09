@@ -4,7 +4,7 @@ const { Validator } = require('jsonschema');
 // app imports
 const { User, Story } = require('../models');
 const { APIError, formatResponse, validateSchema } = require('../helpers');
-const { userUpdate } = require('../schemas');
+const { userUpdateSchema } = require('../schemas');
 
 // global constants
 const v = new Validator();
@@ -29,7 +29,7 @@ function readUser(request, response, next) {
 function updateUser(request, response, next) {
   const { username } = request.params;
   const validationErrors = validateSchema(
-    v.validate(request.body, userUpdate),
+    v.validate(request.body, userUpdateSchema),
     'user'
   );
   if (validationErrors instanceof APIError) {

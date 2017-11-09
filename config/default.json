@@ -7,5 +7,8 @@
       "useMongoClient": true,
       "autoIndex": false
     }
+  },
+  "jwt": {
+    "secretKey": ""
   }
 }

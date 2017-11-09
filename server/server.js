@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 Promise = require('bluebird'); // eslint-disable-line
 
 // app imports
-const { errorHandler, signupLoginHandler } = require('./handlers');
+const { errorHandler, signupLoginHandler, loginRequired } = require('./handlers');
 const { stories, users } = require('./routers');
 
 // global constants
@@ -41,9 +41,10 @@ app.use((request, response, next) => {
   return next();
 });
 
-app.use('/stories', stories);
-app.post('/login', login);
 app.post('/signup', signup);
+app.post('/login', login);
+app.use('*', loginRequired);
+app.use('/stories', stories);
 app.use('/users', users);
 app.get('*', fourOhFourHandler); // catch-all for 404 "Not Found" errors
 app.all('*', fourOhFiveHandler); // catch-all for 405 "Method Not Allowed" errors
