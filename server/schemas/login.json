@@ -1,0 +1,30 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "id": "/",
+  "additionalProperties": false,
+  "required": ["data"],
+  "properties": {
+    "data": {
+      "type": "object",
+      "id": "/properties/data",
+      "properties": {
+        "password": {
+          "type": "string",
+          "id": "/properties/data/properties/password",
+          "minLength": 1,
+          "maxLength": 55
+        },
+        "username": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$",
+          "id": "/properties/data/properties/username",
+          "minLength": 1,
+          "maxLength": 55
+        }
+      },
+      "required": ["password", "username"]
+    }
+  }
+}
