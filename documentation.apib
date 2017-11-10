@@ -1,9 +1,10 @@
 FORMAT: 1A
+HOST: https://hack-or-snooze.herokuapp.com
 
 # Hack or Snooze API
 
 This API is similar to HackerNews. This is a RESTful JSON API with two key resources: **users** and **stories**.
-All endpoints besides reading stories and signing up requires authentication using JSON Web Tokens (JWT).
+All endpoints require authentication using JSON Web Tokens (JWT), with the exception of reading stories and creating users, which are open to the public.
 
 ---
 
@@ -23,11 +24,11 @@ See the 'Reference' section for fully-detailed resource documentation.
 
 ## Quickstart
 
-Example: Make a cURL GET request to read stories.
+First, make a cURL GET request to read stories. No authentication is required for this endpoint.
 
 **Request**
 
-`curl https://derp.com/stories`
+`curl -i https://hack-or-snooze.herokuapp.com/stories`
 
 **Response**
 
@@ -47,7 +48,91 @@ Example: Make a cURL GET request to read stories.
 }
 ```
 
-See the 'Reference' section for fully-detailed resource documentation.
+Next, let's create a user. No authentication needed yet.
+
+**Request**
+
+This is a [POST request to /users](/#reference/0/users/create-a-new-user).
+
+```
+curl -i \
+     -H "Content-Type: application/json" \
+     -X POST \
+     -d '{"data":{"name":"Test User","username":"test","password":"foo"}}' \
+      https://hack-or-snooze.herokuapp.com/users
+```
+
+**Response**
+
+```
+{
+    "data": {
+        "updatedAt": "2017-11-10T21:03:58.358Z",
+        "createdAt": "2017-11-10T21:03:58.358Z",
+        "name": "Test User",
+        "username": "test",
+        "favorites": [],
+        "stories": []
+    }
+}
+```
+
+Now let's get a token so we can use all the endpoints.
+
+**Request**
+
+This is a [POST request to /auth](#reference/0/auth/authorize-to-receive-a-token).
+
+```
+curl -i \
+     -H "Content-Type: application/json" \
+     -X POST \
+     -d '{"data":{"username":"test","password":"foo"}}' \
+      https://hack-or-snooze.herokuapp.com/users
+```
+
+**Response**
+
+```
+{
+    "data": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    }
+}
+```
+
+Finally, we are logged in and have a token. 
+
+Insert the token in all future requests in the auth header like so:
+`Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
+
+**Request**
+
+This is a [GET request to /users/test](/#reference/0/user/get-a-user).
+
+```
+curl -i \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+      https://hack-or-snooze.herokuapp.com/users/test
+```
+
+**Response**
+
+```
+{
+  "data": {
+    "updatedAt": "2017-11-10T21:03:58.358Z",
+    "createdAt": "2017-11-10T21:03:58.358Z",
+    "name": "Test User",
+    "username": "test",
+    "favorites": [],
+    "stories": []
+  }
+}
+```
+
+See the 'Reference' section below for fully-detailed resource documentation, including which routes are protected.
 
 ---
 ## Auth [/auth]
@@ -375,10 +460,10 @@ Retrieve a single story document by `storyId`.
 
 ### User
   + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the user was originally created.
-  + favorites: `5081e46e-3143-4c0c-bbf4-c22eb11eb3f5`, `7df55f38-2611-48c2-b01f-6a4e38f80855` (array[string], optional) - a list of story IDs that are the user's favorites
+  + favorites (array[Story], optional) - a list of stories that are the user's favorites
   + name: `Michael Hueter` (string, optional) - the user's full name, between 1 and 55 characters. **Required to Create a New User.**
   + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
-  + stories: `5081e46e-3143-4c0c-bbf4-c22eb11eb3f5`, `7df55f38-2611-48c2-b01f-6a4e38f80855` (array[string], optional) - a list of story IDs that the user has published
+  + stories (array[Story], optional) - a list of stories that the user has published
   + updatedAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the user was last updated.
   + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
 
