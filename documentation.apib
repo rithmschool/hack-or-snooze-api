@@ -89,7 +89,7 @@ Endpoint for authenticating by getting a JWT from the server.
 Endpoint to create a user or query for a list of users.
 
 + Parameters
-    + skip: 5 (number, optional) - the list of documents to skip over. Default is 0.
+    + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
     + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
 
 ### Get a List of Users [GET]
@@ -242,7 +242,7 @@ There is no request body necessary.
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
-        + data (Success)
+        + data (User)
 
 + Request Unauthorized
 + Response 401 (application/json; charset=utf-8)
@@ -260,7 +260,7 @@ There is no request body necessary.
 Endpoint to create a story or query for a list of stories.
 
 + Parameters
-    + skip: 5 (number, optional) - the list of documents to skip over. Default is 0.
+    + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
     + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
 
 ### Get a List of Stories [GET]
@@ -291,10 +291,10 @@ By default, `limit` is set to 50.
     + Attributes
         + error (Bad Request)
 
-+ Request Conflict
-+ Response 409 (application/json; charset=utf-8)
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
     + Attributes
-        + error (Conflict)
+        + error (Unauthorized)
 
 
 ## Story [/stories/{storyId}]

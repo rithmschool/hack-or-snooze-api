@@ -1,10 +1,15 @@
 // app imports
 const { User, Story } = require('../models');
-const { formatResponse } = require('../helpers');
+const { formatResponse, parseSkipLimit } = require('../helpers');
 
 async function readUsers(request, response, next) {
-  let skip = request.query.skip || 0;
-  let limit = request.query.limit || 50;
+  let skip = parseSkipLimit(request.query.skip, null, 'skip') || 0;
+  let limit = parseSkipLimit(request.query.limit, 50, 'limit') || 50;
+  if (typeof skip !== 'number') {
+    return next(skip);
+  } else if (typeof limit !== 'number') {
+    return next(limit);
+  }
   try {
     const users = await User.readUsers({}, { password: 0 }, skip, limit);
     const finalUsers = await Promise.all(

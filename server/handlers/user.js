@@ -4,7 +4,6 @@ const { Validator } = require('jsonschema');
 // app imports
 const { User, Story } = require('../models');
 const {
-  APIError,
   ensureCorrectUser,
   formatResponse,
   validateSchema
@@ -16,13 +15,6 @@ const v = new Validator();
 
 function readUser(request, response, next) {
   const username = request.params.username;
-  const correctUser = ensureCorrectUser(
-    request.headers.authorization,
-    username
-  );
-  if (correctUser instanceof APIError) {
-    return next(correctUser);
-  }
   return User.readUser(username)
     .then(user => {
       // application-level join to include stories and favorites under User
@@ -32,6 +24,7 @@ function readUser(request, response, next) {
       ]).then(stories => {
         user.stories = stories[0];
         user.favorites = stories[1];
+        delete user.password;
         return response.json(formatResponse(user));
       });
     })
@@ -44,15 +37,15 @@ function updateUser(request, response, next) {
     request.headers.authorization,
     username
   );
-  if (correctUser instanceof APIError) {
+  if (correctUser !== 'OK') {
     return next(correctUser);
   }
-  const validationErrors = validateSchema(
+  const validSchema = validateSchema(
     v.validate(request.body, userUpdateSchema),
     'user'
   );
-  if (validationErrors instanceof APIError) {
-    return next(validationErrors);
+  if (validSchema !== 'OK') {
+    return next(validSchema);
   }
   return User.updateUser(username, request.body.data)
     .then(user => {
@@ -74,7 +67,7 @@ function deleteUser(request, response, next) {
     request.headers.authorization,
     username
   );
-  if (correctUser instanceof APIError) {
+  if (correctUser !== 'OK') {
     return next(correctUser);
   }
   return User.deleteUser(username)
@@ -83,12 +76,12 @@ function deleteUser(request, response, next) {
 }
 
 function createUser(request, response, next) {
-  const validationErrors = validateSchema(
+  const validSchema = validateSchema(
     v.validate(request.body, userNewSchema),
     'user'
   );
-  if (validationErrors instanceof APIError) {
-    return next(validationErrors);
+  if (validSchema !== 'OK') {
+    return next(validSchema);
   }
   return User.createUser(new User(request.body.data))
     .then(user => {

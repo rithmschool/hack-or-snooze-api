@@ -4,7 +4,6 @@ const { Validator } = require('jsonschema');
 // app imports
 const { User, Story } = require('../models');
 const {
-  APIError,
   ensureCorrectUser,
   formatResponse,
   validateSchema
@@ -15,12 +14,12 @@ const { storyNewSchema, storyUpdateSchema } = require('../schemas');
 const v = new Validator();
 
 function createStory(request, response, next) {
-  const validationErrors = validateSchema(
+  const validSchema = validateSchema(
     v.validate(request.body, storyNewSchema),
     'story'
   );
-  if (validationErrors instanceof APIError) {
-    return next(validationErrors);
+  if (validSchema !== 'OK') {
+    return next(validSchema);
   }
   return User.readUser(request.body.data.username)
     .then(() => Story.createStory(new Story(request.body.data)))
@@ -35,13 +34,13 @@ function readStory(request, response, next) {
 }
 
 function updateStory(request, response, next) {
-  const { storyId } = request.params.storyId;
-  const validationErrors = validateSchema(
+  const { storyId } = request.params;
+  const validSchema = validateSchema(
     v.validate(request.body, storyUpdateSchema),
     'story'
   );
-  if (validationErrors instanceof APIError) {
-    return next(validationErrors);
+  if (validSchema !== 'OK') {
+    return next(validSchema);
   }
   return Story.readStory(storyId)
     .then(story => {
@@ -49,7 +48,7 @@ function updateStory(request, response, next) {
         request.headers.authorization,
         story.username
       );
-      if (correctUser instanceof APIError) {
+      if (correctUser !== 'OK') {
         return next(correctUser);
       }
     })
@@ -59,14 +58,14 @@ function updateStory(request, response, next) {
 }
 
 function deleteStory(request, response, next) {
-  const { storyId } = request.params.storyId;
+  const { storyId } = request.params;
   return Story.readStory(storyId)
     .then(story => {
       const correctUser = ensureCorrectUser(
         request.headers.authorization,
         story.username
       );
-      if (correctUser instanceof APIError) {
+      if (correctUser !== 'OK') {
         return next(correctUser);
       }
     })

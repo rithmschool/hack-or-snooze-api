@@ -44,7 +44,8 @@ let testStory2Id;
 const badRequest = {
   foo: 'bar'
 };
-const fourOhfour = 'asdfasdfsaf';
+const fourOhFour = 'asdfasdfsaf';
+let fourOhFourToken;
 
 let token1;
 let authHeader1;
@@ -66,7 +67,7 @@ before(
       .then(() => (transaction.request.body = JSON.stringify(testUser1)))
       .then(() => done())
       .catch(err => {
-        console.log(err.response);
+        console.log(err.response.data);
         return done();
       });
   }
@@ -166,7 +167,6 @@ before('Users > Create a New User > Example 3', (transaction, done) => {
 before('User > Get a User > Example 1', (transaction, done) => {
   transaction.request.headers['Authorization'] = authHeader2;
   transaction.fullPath = `/users/${testUsername2}`;
-  console.log(testUsername2);
   return done();
 });
 // 401
@@ -177,7 +177,7 @@ before('User > Get a User > Example 2', (transaction, done) => {
 // 404
 before('User > Get a User > Example 3', (transaction, done) => {
   transaction.request.headers['Authorization'] = authHeader2;
-  transaction.fullPath = `/users/${fourOhfour}`;
+  transaction.fullPath = `/users/${fourOhFour}`;
   return done();
 });
 
@@ -206,14 +206,44 @@ before('User > Update a User > Example 3', (transaction, done) => {
 });
 // 404
 before('User > Update a User > Example 4', (transaction, done) => {
-  transaction.request.headers['Authorization'] = authHeader2;
-  transaction.fullPath = `/users/${fourOhfour}`;
-  transaction.request.body = JSON.stringify({
-    data: {
-      name: 'Whiskey Lane'
-    }
-  });
-  return done();
+  return axios
+    .post(
+      `/users`,
+      { data: { name: 'fourOhFour', username: fourOhFour, password: '404' } },
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+    .then(() => {
+      return axios.post(
+        '/auth',
+        { data: { username: fourOhFour, password: '404' } },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+    })
+    .then(res => {
+      fourOhFourToken = `Bearer ${res.data.data.token}`;
+      return axios
+        .delete(`/users/${fourOhFour}`, {
+          headers: { Authorization: fourOhFourToken }
+        })
+        .then(() => {
+          transaction.request.headers['Authorization'] = fourOhFourToken;
+          transaction.fullPath = `/users/${fourOhFour}`;
+          transaction.request.body = JSON.stringify({
+            data: {
+              name: 'Whiskey Lane'
+            }
+          });
+          return done();
+        })
+        .catch(err => {
+          console.log(err.response.data);
+          return done();
+        });
+    })
+    .catch(err => {
+      console.log(err.response.data);
+      return done();
+    });
 });
 
 // DELETE /users/:username
@@ -231,8 +261,8 @@ before('User > Delete a User > Example 2', (transaction, done) => {
 });
 // 404
 before('User > Delete a User > Example 3', (transaction, done) => {
-  transaction.request.headers['Authorization'] = authHeader2;
-  transaction.fullPath = `/users/${fourOhfour}`;
+  transaction.request.headers['Authorization'] = fourOhFourToken;
+  transaction.fullPath = `/users/${fourOhFour}`;
   return done();
 });
 
@@ -255,7 +285,8 @@ before(
         return done();
       })
       .catch(err => {
-        console.log(err.response);
+        console.log('meerkats');
+        console.log(err.response.data);
         return done();
       });
   }
@@ -273,7 +304,7 @@ before(
   'User Favorites > Add a New Favorite > Example 3',
   (transaction, done) => {
     transaction.request.headers['Authorization'] = authHeader1;
-    transaction.fullPath = `/users/${testUsername1}/favorites/${fourOhfour}`;
+    transaction.fullPath = `/users/${testUsername1}/favorites/${fourOhFour}`;
     return done();
   }
 );
@@ -301,7 +332,7 @@ before(
   'User Favorites > Delete a User Favorite > Example 3',
   (transaction, done) => {
     transaction.request.headers['Authorization'] = authHeader1;
-    transaction.fullPath = `/users/${testUsername1}/favorites/${fourOhfour}`;
+    transaction.fullPath = `/users/${testUsername1}/favorites/${fourOhFour}`;
     return done();
   }
 );
@@ -349,31 +380,70 @@ before('Story > Get a Story > Example 1', (transaction, done) => {
 });
 // 404
 before('Story > Get a Story > Example 2', (transaction, done) => {
-  transaction.fullPath = `/stories/${fourOhfour}`;
+  transaction.fullPath = `/stories/${fourOhFour}`;
   return done();
 });
 
 // PATCH /stories/:storyId
+//200
 before('Story > Update a Story > Example 1', (transaction, done) => {
+  transaction.fullPath = `/stories/${testStory2Id}`;
+  transaction.request.headers['Authorization'] = authHeader1;
+  transaction.request.body = JSON.stringify({ data: { author: 'Whiskey' } });
   return done();
 });
+// 400
 before('Story > Update a Story > Example 2', (transaction, done) => {
+  transaction.fullPath = `/stories/${testStory2Id}`;
+  transaction.request.headers['Authorization'] = authHeader1;
+  transaction.request.body = JSON.stringify(badRequest);
   return done();
 });
+// 401
 before('Story > Update a Story > Example 3', (transaction, done) => {
+  transaction.fullPath = `/stories/${testStory2Id}`;
+  transaction.request.headers['Authorization'] = authHeader2;
+  transaction.request.body = JSON.stringify({ data: { author: 'Whiskey' } });
   return done();
 });
+// 404
 before('Story > Update a Story > Example 4', (transaction, done) => {
+  transaction.fullPath = `/stories/${fourOhFour}`;
+  transaction.request.headers['Authorization'] = authHeader1;
+  transaction.request.body = JSON.stringify({ data: { author: 'Whiskey' } });
   return done();
 });
 
 // DELETE /stories/:storyId
+// 200
 before('Story > Delete a Story > Example 1', (transaction, done) => {
+  transaction.fullPath = `/stories/${testStory2Id}`;
+  transaction.request.headers['Authorization'] = authHeader1;
   return done();
 });
+// 401
 before('Story > Delete a Story > Example 2', (transaction, done) => {
+  transaction.fullPath = `/stories/${testStory1Id}`;
+  transaction.request.headers['Authorization'] = authHeader2;
   return done();
 });
+// 404
 before('Story > Delete a Story > Example 3', (transaction, done) => {
+  transaction.fullPath = `/stories/${fourOhFour}`;
+  transaction.request.headers['Authorization'] = authHeader1;
   return done();
+});
+
+after('Story > Delete a Story > Example 3', (transaction, done) => {
+  return axios
+    .delete(`/users/${testUsername1}`, {
+      headers: { Authorization: authHeader1 }
+    })
+    .then(() => {
+      return done();
+    })
+    .catch(err => {
+      console.log(err);
+      return done();
+    });
 });

@@ -1,6 +1,6 @@
 // app imports
 const { User, Story } = require('../models');
-const { APIError, formatResponse, ensureCorrectUser } = require('../helpers');
+const { formatResponse, ensureCorrectUser } = require('../helpers');
 
 function addUserFavorite(request, response, next) {
   const { username, storyId } = request.params;
@@ -8,7 +8,7 @@ function addUserFavorite(request, response, next) {
     request.headers.authorization,
     username
   );
-  if (correctUser instanceof APIError) {
+  if (correctUser !== 'OK') {
     return next(correctUser);
   }
   return User.readUser(username)
@@ -34,7 +34,7 @@ function deleteUserFavorite(request, response, next) {
     request.headers.authorization,
     username
   );
-  if (correctUser instanceof APIError) {
+  if (correctUser !== 'OK') {
     return next(correctUser);
   }
   return User.readUser(username)

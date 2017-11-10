@@ -2,8 +2,8 @@ const APIError = require('./APIError');
 
 /**
 * Validate the thing POST and PATCH payloads against the appropriate schema definitions.
-* @param {Object} validation schema validation object {the return value of v.validate(payload, schemaDefinition)}
-* @param {String} type the thing being validated
+* @param {Object} validation - schema validation object {the return value of v.validate(payload, schemaDefinition)}
+* @param {String} type - the thing being validated
 * @return {APIError} an APIError with a list of validation issues
 */
 function validateSchema(validation, type) {
@@ -34,6 +34,8 @@ function validateSchema(validation, type) {
 
     return new APIError(400, 'Bad Request', `${errors.join('; ')}.`);
   }
+
+  return 'OK';
 }
 
 module.exports = validateSchema;

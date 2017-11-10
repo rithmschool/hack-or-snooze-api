@@ -4,10 +4,11 @@ const jwt = require('jsonwebtoken');
 // app imports
 const { APIError } = require('../helpers');
 
-function ensureCorrectUser(token, correctUser) {
+function ensureCorrectUser(authHeader, correctUser) {
   let username;
+  const token = authHeader.split(' ')[1];
   try {
-    username = jwt.decode(token, { json: true }).payload.username;
+    username = jwt.decode(token, { json: true }).username;
   } catch (e) {
     return e;
   }
@@ -18,6 +19,7 @@ function ensureCorrectUser(token, correctUser) {
       'You are not authorized to make changes to this resource because permissions belong to another user.'
     );
   }
+  return 'OK';
 }
 
 module.exports = ensureCorrectUser;
