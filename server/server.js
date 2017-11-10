@@ -36,7 +36,7 @@ if (ENV === 'development') {
 
 // body parser setup
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ type: '*/*' }));
 app.use(bodyParserHandler); // error handling specific to body parser only
 
 // response headers setup

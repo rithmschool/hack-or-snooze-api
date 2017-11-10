@@ -1,0 +1,417 @@
+FORMAT: 1A
+
+# Hack or Snooze API
+
+This API is similar to HackerNews. This is a RESTful JSON API with two key resources: **users** and **stories**.
+All endpoints besides reading stories and signing up requires authentication using JSON Web Tokens (JWT).
+
+---
+
+## Resource Structure
+
+### Collections
+
+The API provides access to the following collections:
+
+1. Users at `/users`
+2. Stories at `/stories`
+
+Both collections have full CRUD operations.
+See the 'Reference' section for fully-detailed resource documentation.
+
+----
+
+## Quickstart
+
+Example: Make a cURL GET request to read stories.
+
+**Request**
+
+`curl https://derp.com/stories`
+
+**Response**
+
+```
+{
+    "data": [
+        {
+            "updatedAt": "2017-11-09T18:38:39.409Z",
+            "createdAt": "2017-11-09T18:38:39.409Z",
+            "storyId": "5081e46e-3143-4c0c-bbf4-c22eb11eb3f5",
+            "author": "Matt Lane",
+            "title": "Do Web Developers Need to be Good at Math?",
+            "url": "https://www.rithmschool.com/blog/do-web-developers-need-to-be-good-at-mathm",
+            "username": "mhueter"
+        }
+    ]
+}
+```
+
+See the 'Reference' section for fully-detailed resource documentation.
+
+---
+## Auth [/auth]
+Endpoint for authenticating by getting a JWT from the server.
+
+### Authorize to Receive a Token [POST]
+
++ Request
+    + Attributes
+        + data (Auth)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data
+            + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1odWV0ZXIiLCJpYXQiOjE1MTAyMDcwMDl9.5oUeihYn2AkqGy6z3g5F5B46gWWgvGKilFr9S4gg-p4` (string, required) - JWT used to authenticate in the future. Put in `Authorization` request header like: `Bearer <TOKEN>`.
+
++ Request Bad Request
+    + Attributes
+        + data (Auth)
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
+    + Attributes
+        + data (Auth)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
+    + Attributes
+        + data (Auth)
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+## Users [/users{?skip,limit}]
+Endpoint to create a user or query for a list of users.
+
++ Parameters
+    + skip: 5 (number, optional) - the list of documents to skip over. Default is 0.
+    + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
+
+### Get a List of Users [GET]
+**Auth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (array[User])
+
++ Request Bad Request
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
+### Create a New User [POST]
+Note: password will not be present in the response. 
+The fields `username`, `password`, and `name` are required, while `favorites` and `stories` cannot be set at this endpoint.
+
++ Request
+    + Attributes
+        + data (User)
++ Response 201 (application/json; charset=utf-8)
+    + Attributes
+        + data (User)
+
++ Request Bad Request
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Conflict
++ Response 409 (application/json; charset=utf-8)
+    + Attributes
+        + error (Conflict)
+
+
+## User [/users/{username}]
+Endpoint for reading, updating, or deleting a single user. 
+
++ Parameters
+    + username: mhueter (string, required) - the username to lookup.
+
+### Get a User [GET]
+**Auth Required**. Retrieve a single user document by `username`.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (User)
+
++ Request Unauthorized
+    + Attributes
+        + data (User)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+### Update a User [PATCH]
+**Auth Required. Correct User Required.** Update a single user document by `username`. Note: `username` and `favorites` are immutable via this endpoint.
+
++ Request
+    + Attributes
+        + data (User)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (User)
+
++ Request Bad Request
+    + Attributes
+        + data (User)
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
+    + Attributes
+        + data (User)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
+    + Attributes
+        + data (User)
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+### Delete a User [DELETE]
+**Auth Required. Correct User Required.** Remove a single user document by `username`.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Success)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+
+## User Favorites [/users/{username}/favorites/{storyId}]
+
++ Parameters
+    + username: mhueter (string, required) - the target user.
+    + storyId: `32d336da-98cd-4010-bb39-1d789b9bef50` (string, required) - the story's ID for the target favorite.
+
+### Add a New Favorite [POST]
+**Auth Required. Correct User Required.** Full user document will be returned. Note: password will not be present in the response. 
+There is no request body necessary.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (User)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+### Delete a User Favorite [DELETE]
+**Auth Required. Correct User Required.** Full user document will be returned. Note: password will not be present in the response. 
+There is no request body necessary.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Success)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+
+## Stories [/stories{?skip,limit}]
+Endpoint to create a story or query for a list of stories.
+
++ Parameters
+    + skip: 5 (number, optional) - the list of documents to skip over. Default is 0.
+    + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
+
+### Get a List of Stories [GET]
+By default, `limit` is set to 50.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (array[Story])
+
++ Request Bad Request
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
+### Create a New Story [POST]
+**Auth Required**. The fields `username`, `title`, `author`, and `url` are required.
+
++ Request
+    + Attributes
+        + data (Story)
++ Response 201 (application/json; charset=utf-8)
+    + Attributes
+        + data (Story)
+
++ Request Bad Request
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Conflict
++ Response 409 (application/json; charset=utf-8)
+    + Attributes
+        + error (Conflict)
+
+
+## Story [/stories/{storyId}]
+Endpoint for reading, updating, or deleting a single story. 
+
++ Parameters
+    + storyId: `7df55f38-2611-48c2-b01f-6a4e38f80855` (string, required) - the story ID to lookup.
+
+### Get a Story [GET]
+Retrieve a single story document by `storyId`.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Story)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+### Update a Story [PATCH]
+**Auth Required. Correct User Required.** Update a single story document by `storyId`. Note: `username` is immutable at this endpoint.
+
++ Request
+    + Attributes
+        + data (Story)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Story)
+
++ Request Bad Request
+    + Attributes
+        + data (Story)
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
+    + Attributes
+        + data (Story)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
+    + Attributes
+        + data (Story)
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+### Delete a Story [DELETE]
+**Auth Required. Correct User Required.** Remove a single story document by `storyId`.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Success)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+## Data Structures
+
+### Auth
+  + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
+  + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
+
+### User
+  + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the user was originally created.
+  + favorites: `5081e46e-3143-4c0c-bbf4-c22eb11eb3f5`, `7df55f38-2611-48c2-b01f-6a4e38f80855` (array[string], optional) - a list of story IDs that are the user's favorites
+  + name: `Michael Hueter` (string, optional) - the user's full name, between 1 and 55 characters. **Required to Create a New User.**
+  + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
+  + stories: `5081e46e-3143-4c0c-bbf4-c22eb11eb3f5`, `7df55f38-2611-48c2-b01f-6a4e38f80855` (array[string], optional) - a list of story IDs that the user has published
+  + updatedAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the user was last updated.
+  + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
+
+### Story
+  + author: `Matt Lane` (string, optional) - the original author of the story. **Required to Create a New Story.**
+  + createdAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the story was originally created.
+  + storyId: `5081e46e-3143-4c0c-bbf4-c22eb11eb3f5` (string, optional) - the auto-generated ID of the story used to reference story documents in routes.
+  + title: `The Best Story Ever` (string, optional) - the title of the story. **Required to Create a New Story.**
+  + updatedAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the story was last updated.
+  + url: `https://www.rithmschool.com/blog/do-web-developers-need-to-be-good-at-math` (string, optional) - the URL of the story. **Required to Create a New Story. Must Conform to URI Format.**
+  + username: `mhueter` (string, optional) - the user who posted the story. **Required to Create a New Story.**
+
+### Bad Request
+  + status: 400 (number, required) - HTTP status code
+  + title: 'Bad Request' (string, required) - text accompanying the status code
+  + message: 'Invalid schema format or malformed JSON.' (string, required) - description of the error
+
+### Unauthorized
+  + status: 401 (number, required) - HTTP status code
+  + title: 'Unauthorized' (string, required) - text accompanying the status code
+  + message: 'You need to authenticate before accessing this resource.' (string, required) - description of the error
+
+### Not Found
+  + status: 404 (number, required) - HTTP status code
+  + title: 'Not Found' (string, required) - text accompanying the status code
+  + message: 'Document with that ID was not found.' (string, required) - description of the error
+
+### Conflict
+  + status: 409 (number, required) - HTTP status code
+  + title: 'Conflict' (string, required) - text accompanying the status code
+  + message: 'Another document with the same ID already exists.' (string, required) - description of the error
+
+### Success
+  + status: 200 (number, required) - HTTP status code
+  + title: 'Success' (string, required) - text accompanying the status code
+  + message: 'The operation was successful.' (string, required) - description of the event

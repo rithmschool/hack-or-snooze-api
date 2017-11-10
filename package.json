@@ -6,6 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=development nodemon server/server.js",
     "production": "NODE_ENV=production pm2 start server/server.js",
+    "pstop": "pm2 stop all",
     "test": "mocha tests"
   },
   "repository": {
@@ -25,7 +26,9 @@
   },
   "homepage": "https://github.com/rithmschool/hack-or-snooze-api#readme",
   "devDependencies": {
-    "eslint": "^4.10.0"
+    "axios": "^0.17.0",
+    "eslint": "^4.10.0",
+    "faker": "^4.1.0"
   },
   "dependencies": {
     "body-parser": "1.18.2",
