@@ -21,7 +21,15 @@ function createStory(request, response, next) {
   if (validSchema !== 'OK') {
     return next(validSchema);
   }
-  return User.readUser(request.body.data.username)
+  const { username } = request.body.data;
+  const correctUser = ensureCorrectUser(
+    request.headers.authorization,
+    username
+  );
+  if (correctUser !== 'OK') {
+    throw correctUser;
+  }
+  return User.readUser(username)
     .then(() => Story.createStory(new Story(request.body.data)))
     .then(story => response.status(201).json(formatResponse(story)))
     .catch(err => next(err));

@@ -23,14 +23,14 @@
           "type": "string", 
           "id": "/properties/data/properties/title", 
           "minLength": 1, 
-          "maxLength": 55
+          "maxLength": 75
         }, 
         "url": {
           "type": "string",
           "format": "uri",          
           "id": "/properties/data/properties/url", 
           "minLength": 1, 
-          "maxLength": 55
+          "maxLength": 200
         }
       }
     }
