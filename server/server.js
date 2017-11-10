@@ -6,14 +6,13 @@ const mongoose = require('mongoose');
 Promise = require('bluebird'); // eslint-disable-line
 
 // app imports
-const { ENV, MONGODB_URI } = require('./config');
+const { ENV, PORT, MONGODB_URI } = require('./config');
 const { authHandler, errorHandler } = require('./handlers');
 const { storiesRouter, usersRouter } = require('./routers');
 
 // global constants
 dotenv.config();
 const app = express();
-const PORT = 5000;
 const {
   bodyParserHandler,
   globalErrorHandler,
