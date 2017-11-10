@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 Promise = require('bluebird'); // eslint-disable-line
 
 // app imports
-const { ENV, mongoDBConfig } = require('./config');
+const { ENV, MONGODB_URI } = require('./config');
 const { authHandler, errorHandler } = require('./handlers');
 const { storiesRouter, usersRouter } = require('./routers');
 
@@ -20,19 +20,12 @@ const {
   fourOhFourHandler,
   fourOhFiveHandler
 } = errorHandler;
-
 // database
 mongoose.Promise = Promise;
-const { host, name, user, pass, port, options } = mongoDBConfig;
 if (ENV === 'development') {
   mongoose.set('debug', true);
-  mongoose.connect(`mongodb://${host}/${name}`, options);
-} else {
-  mongoose.connect(
-    `mongodb://${user}:${pass}@${host}:${port}/${name}`,
-    options
-  );
 }
+mongoose.connect(MONGODB_URI, { useMongoClient: true, autoIndex: true });
 
 // body parser setup
 app.use(bodyParser.urlencoded({ extended: true }));

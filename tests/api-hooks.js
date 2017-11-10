@@ -436,12 +436,15 @@ before('Story > Delete a Story > Example 3', (transaction, done) => {
 
 after('Story > Delete a Story > Example 3', (transaction, done) => {
   return axios
-    .delete(`/users/${testUsername1}`, {
+    .delete(`/stories/${testStory1Id}`, {
       headers: { Authorization: authHeader1 }
     })
     .then(() => {
-      return done();
+      return axios.delete(`/users/${testUsername1}`, {
+        headers: { Authorization: authHeader1 }
+      });
     })
+    .then(() => done())
     .catch(err => {
       console.log(err);
       return done();

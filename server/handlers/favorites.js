@@ -14,7 +14,7 @@ function addUserFavorite(request, response, next) {
   return User.readUser(username)
     .then(() => Story.readStory(storyId))
     .then(() => User.addOrDeleteFavorite(username, storyId, 'add'))
-    .then(user => {
+    .then(user =>
       // application-level join to include stories and favorites under User
       Promise.all([
         Story.readStories({ username: username }),
@@ -23,8 +23,8 @@ function addUserFavorite(request, response, next) {
         user.stories = stories[0];
         user.favorites = stories[1];
         return response.json(formatResponse(user));
-      });
-    })
+      })
+    )
     .catch(err => next(err));
 }
 
@@ -40,7 +40,7 @@ function deleteUserFavorite(request, response, next) {
   return User.readUser(username)
     .then(() => Story.readStory(storyId))
     .then(() => User.addOrDeleteFavorite(username, storyId, 'delete'))
-    .then(user => {
+    .then(user =>
       // application-level join to include stories and favorites under User
       Promise.all([
         Story.readStories({ username: username }),
@@ -49,8 +49,8 @@ function deleteUserFavorite(request, response, next) {
         user.stories = stories[0];
         user.favorites = stories[1];
         return response.json(formatResponse(user));
-      });
-    })
+      })
+    )
     .catch(err => next(err));
 }
 

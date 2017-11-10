@@ -48,7 +48,7 @@ function updateUser(request, response, next) {
     return next(validSchema);
   }
   return User.updateUser(username, request.body.data)
-    .then(user => {
+    .then(user =>
       // application-level join to include stories and favorites under User
       Promise.all([
         Story.readStories({ username: username }),
@@ -57,8 +57,8 @@ function updateUser(request, response, next) {
         user.stories = stories[0];
         user.favorites = stories[1];
         return response.json(formatResponse(user));
-      });
-    })
+      })
+    )
     .catch(err => next(err));
 }
 function deleteUser(request, response, next) {

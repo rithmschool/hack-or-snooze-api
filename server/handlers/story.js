@@ -49,7 +49,7 @@ function updateStory(request, response, next) {
         story.username
       );
       if (correctUser !== 'OK') {
-        return next(correctUser);
+        throw correctUser;
       }
     })
     .then(() => Story.updateStory(storyId, request.body.data))
@@ -66,7 +66,7 @@ function deleteStory(request, response, next) {
         story.username
       );
       if (correctUser !== 'OK') {
-        return next(correctUser);
+        throw correctUser;
       }
     })
     .then(() => Story.deleteStory(storyId))

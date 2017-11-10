@@ -4,10 +4,10 @@
   "description": "Hacker News API Clone",
   "main": "NODE_ENV=development nodemon server/server.js",
   "scripts": {
-    "start": "NODE_ENV=development nodemon server/server.js",
-    "production": "NODE_ENV=production pm2 start server/server.js",
-    "pstop": "pm2 stop all",
-    "test": "mocha tests"
+    "start": "NODE_ENV=production pm2 start server/server.js",
+    "dev": "NODE_ENV=development nodemon server/server.js",
+    "stop": "pm2 stop all",
+    "test": "dredd documentation.apib http://localhost5000 -f tests/api-hooks.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,9 @@
   ],
   "author": "Michael Hueter",
   "license": "ISC",
+  "engines": {
+    "node": "9.0.0"
+  },
   "bugs": {
     "url": "https://github.com/rithmschool/hack-or-snooze-api/issues"
   },
@@ -28,6 +31,7 @@
   "devDependencies": {
     "axios": "^0.17.0",
     "eslint": "^4.10.0",
+    "nodemon": "1.12.1",    
     "faker": "^4.1.0"
   },
   "dependencies": {
@@ -37,7 +41,6 @@
     "jsonschema": "1.2.0",
     "jsonwebtoken": "8.1.0",
     "mongoose": "4.13.0",
-    "nodemon": "1.12.1",
     "pm2": "2.7.2",
     "uuid": "3.1.0"
   }
