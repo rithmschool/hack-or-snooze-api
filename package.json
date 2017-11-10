@@ -4,7 +4,8 @@
   "description": "Hacker News API Clone",
   "main": "NODE_ENV=development nodemon server/server.js",
   "scripts": {
-    "start": "NODE_ENV=production pm2 start server/server.js",
+    "preinstall": "npm install pm2 -g",
+    "start": "NODE_ENV=production pm2 start app.js -i max --attach",
     "dev": "NODE_ENV=development nodemon server/server.js",
     "stop": "pm2 stop all",
     "test": "dredd documentation.apib http://localhost5000 -f tests/api-hooks.js"
