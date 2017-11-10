@@ -8,8 +8,6 @@ This API is currently running here: [https://hack-or-snooze.herokuapp.com/](http
 
 Full interactive API documentation available here: [https://hackorsnoozeapi.docs.apiary.io](https://hackorsnoozeapi.docs.apiary.io)
 
----
-
 ## Development 
 
 ### Prerequisites to Running Locally
