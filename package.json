@@ -22,7 +22,8 @@
   "author": "Michael Hueter",
   "license": "ISC",
   "engines": {
-    "node": "9.0.0"
+    "node": "9.0.0",
+    "npm": "5.5.1"
   },
   "bugs": {
     "url": "https://github.com/rithmschool/hack-or-snooze-api/issues"
@@ -31,7 +32,7 @@
   "devDependencies": {
     "axios": "^0.17.0",
     "eslint": "^4.10.0",
-    "nodemon": "1.12.1",    
+    "nodemon": "1.12.1",
     "faker": "^4.1.0"
   },
   "dependencies": {
