@@ -222,13 +222,13 @@ Endpoint for authenticating by getting a JWT from the server.
 ## Users [/users{?skip,limit}]
 Endpoint to create a user or query for a list of users.
 
-+ Parameters
-    + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
-    + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
-
 ### Get a List of Users [GET]
 **Auth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
 
++ Parameters
+    + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
+    + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
+    
 + Request
 + Response 200 (application/json; charset=utf-8)
     + Attributes
