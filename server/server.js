@@ -36,7 +36,7 @@ app.use((request, response, next) => {
   response.header('Access-Control-Allow-Origin', '*');
   response.header('Access-Control-Allow-Headers', 'Authorization');
   response.header('Access-Control-Allow-Headers', 'Content-Type');
-  response.header('Access-Control-Allow-Methods', 'POST,GET,PATCH,DELETE');
+  response.header('Access-Control-Allow-Methods', 'POST,GET,PATCH,DELETE,OPTIONS');
   response.header('Content-Type', 'application/json');
   return next();
 });
