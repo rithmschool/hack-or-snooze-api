@@ -94,7 +94,7 @@ storySchema.statics = {
     return this.find(query, fields)
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .exec()
       .then(stories => {
         if (stories.length === 0) {
