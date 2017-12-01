@@ -151,9 +151,12 @@ storySchema.statics = {
 storySchema.post('save', story =>
   User.updateUser(story.username, { $addToSet: { stories: story._id } })
 );
-storySchema.post('remove', story =>
-  User.updateUser(story.username, { $pull: { stories: story._id } })
-);
+storySchema.post('remove', story => {
+  // remove from posting user's list of stories
+  User.updateUser(story.username, { $pull: { stories: story._id } });
+  // remove from favorites for all users who have favorited the story
+  User.removeFavoriteFromAll(story._id);
+});
 
 // This code removes _id and __v from query results
 if (!storySchema.options.toObject) storySchema.options.toObject = {};

@@ -169,6 +169,14 @@ userSchema.statics = {
         return user.toObject();
       })
       .catch(error => Promise.reject(processDBError(error)));
+  },
+  /**
+   * This method is for the special instance where a story gets deleted
+   *  and it has to be removed from every User's favorite list
+   * @param {String} favoriteId aka story._id
+   */
+  removeFavoriteFromAll(favoriteId) {
+    return this.update({}, { $pull: { favorites: favoriteId } });
   }
 };
 
