@@ -16,18 +16,7 @@ const v = new Validator();
 function readUser(request, response, next) {
   const username = request.params.username;
   return User.readUser(username)
-    .then(user => {
-      // application-level join to include stories and favorites under User
-      return Promise.all([
-        Story.readStories({ username: username }),
-        Story.readStories({ storyId: { $in: user.favorites } })
-      ]).then(stories => {
-        user.stories = stories[0];
-        user.favorites = stories[1];
-        delete user.password;
-        return response.json(formatResponse(user));
-      });
-    })
+    .then(user => response.json(formatResponse(user)))
     .catch(err => next(err));
 }
 
@@ -84,11 +73,7 @@ function createUser(request, response, next) {
     return next(validSchema);
   }
   return User.createUser(new User(request.body.data))
-    .then(user => {
-      delete user.password;
-      user.stories = [];
-      return response.status(201).json(formatResponse(user));
-    })
+    .then(user => response.status(201).json(formatResponse(user)))
     .catch(err => next(err));
 }
 

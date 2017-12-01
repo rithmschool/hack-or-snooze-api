@@ -4,6 +4,7 @@ const uuidv4 = require('uuid/v4');
 
 // app imports
 const { APIError, processDBError } = require('../helpers');
+const User = require('./User');
 
 // constants
 const Schema = mongoose.Schema;
@@ -124,8 +125,31 @@ storySchema.statics = {
         return story.toObject();
       })
       .catch(error => Promise.reject(processDBError(error)));
+  },
+  /**
+   * Convenience method for getting just the _id as a string back
+   * @param {String} storyId
+   * @returns {Promise<Story, APIError>}
+   */
+  getMongoId(storyId) {
+    return this.findOne({ storyId }, { _id: 1 })
+      .exec()
+      .then(story => {
+        if (!story) {
+          throw new APIError(
+            404,
+            'Story Not Found',
+            `No story with ID '${storyId}' found.`
+          );
+        }
+        return story._id;
+      });
   }
 };
+
+storySchema.post('save', story =>
+  User.updateUser(story.username, { $addToSet: { stories: story._id } })
+);
 
 /* Transform with .toObject to remove __v and _id from response */
 if (!storySchema.options.toObject) storySchema.options.toObject = {};

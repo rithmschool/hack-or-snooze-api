@@ -9,9 +9,10 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
-    favorites: [String],
+    favorites: [{ type: Schema.Types.ObjectId, ref: 'Story' }],
     name: String,
     password: String,
+    stories: [{ type: Schema.Types.ObjectId, ref: 'Story' }],
     username: {
       type: String,
       index: true
@@ -73,6 +74,8 @@ userSchema.statics = {
    */
   readUser(username) {
     return this.findOne({ username })
+      .populate('favorites')
+      .populate('stories')
       .exec()
       .then(user => {
         if (!user) {
@@ -99,6 +102,8 @@ userSchema.statics = {
       .skip(skip)
       .limit(limit)
       .sort({ username: 1 })
+      .populate('favorites')
+      .populate('stories')
       .exec()
       .then(users => {
         if (users.length === 0) {
@@ -132,9 +137,9 @@ userSchema.statics = {
 
   /**
    * A function to add or remove favorites from the set of
-   *  user favorites. Note: favorites are storyIds.
-   * @param {String} username 
-   * @param {String} favoriteId aka storyId
+   *  user favorites. Note: favorites are story._ids, not storyIds.
+   * @param {String} username
+   * @param {String} favoriteId aka story._id
    * @param {String} action 'add' or 'delete'
    * @return {Promise<User>}
    */
@@ -148,6 +153,8 @@ userSchema.statics = {
       { [actions[action]]: { favorites: favoriteId } },
       { new: true }
     )
+      .populate('favorites')
+      .populate('stories')
       .exec()
       .then(user => {
         if (!user) {

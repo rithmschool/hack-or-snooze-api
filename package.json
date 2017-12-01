@@ -22,7 +22,7 @@
   "author": "Michael Hueter",
   "license": "ISC",
   "engines": {
-    "node": "9.0.0",
+    "node": "9.2.0",
     "npm": "5.5.1"
   },
   "bugs": {
@@ -30,19 +30,19 @@
   },
   "homepage": "https://github.com/rithmschool/hack-or-snooze-api#readme",
   "devDependencies": {
-    "axios": "^0.17.0",
-    "eslint": "^4.10.0",
+    "axios": "^0.17.1",
+    "eslint": "^4.12.1",
     "nodemon": "1.12.1",
     "faker": "^4.1.0"
   },
   "dependencies": {
     "body-parser": "1.18.2",
-    "dotenv": "^4.0.0",
+    "dotenv": "4.0.0",
     "express": "4.16.2",
     "jsonschema": "1.2.0",
     "jsonwebtoken": "8.1.0",
-    "mongoose": "4.13.0",
-    "pm2": "2.7.2",
+    "mongoose": "4.13.5",
+    "pm2": "2.8.0",
     "uuid": "3.1.0"
   }
 }

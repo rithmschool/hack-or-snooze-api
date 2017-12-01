@@ -1,5 +1,5 @@
 // app imports
-const { User, Story } = require('../models');
+const { User } = require('../models');
 const { formatResponse, parseSkipLimit } = require('../helpers');
 
 async function readUsers(request, response, next) {
@@ -12,26 +12,7 @@ async function readUsers(request, response, next) {
   }
   try {
     const users = await User.readUsers({}, { password: 0 }, skip, limit);
-    const finalUsers = await Promise.all(
-      users.map(async user => {
-        const stories = await Story.readStories(
-          { username: user.username },
-          { username: 0 }
-        );
-        const favorites = await Story.readStories(
-          {
-            storyId: { $in: user.favorites }
-          },
-          { username: 0 }
-        );
-        return {
-          ...user,
-          stories,
-          favorites
-        };
-      })
-    );
-    return response.json(formatResponse(finalUsers));
+    return response.json(formatResponse(users));
   } catch (e) {
     return next(e);
   }
