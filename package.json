@@ -5,7 +5,7 @@
   "main": "NODE_ENV=development nodemon server/server.js",
   "scripts": {
     "preinstall": "npm install pm2 -g",
-    "start": "NODE_ENV=production pm2 start server/server.js -i max --attach",
+    "start": "NODE_ENV=production pm2 start server/server.js -i 2 --attach",
     "dev": "NODE_ENV=development nodemon server/server.js",
     "stop": "pm2 stop all"
   },
