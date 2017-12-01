@@ -121,6 +121,8 @@ userSchema.statics = {
    */
   updateUser(username, userUpdate) {
     return this.findOneAndUpdate({ username }, userUpdate, { new: true })
+      .populate('favorites')
+      .populate('stories')
       .exec()
       .then(user => {
         if (!user) {
@@ -170,7 +172,7 @@ userSchema.statics = {
   }
 };
 
-/* Transform with .toObject to remove __v and _id from response */
+// This code removes _id and __v from query results
 if (!userSchema.options.toObject) userSchema.options.toObject = {};
 userSchema.options.toObject.transform = (doc, ret) => {
   const transformed = ret;

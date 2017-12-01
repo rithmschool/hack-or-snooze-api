@@ -147,11 +147,15 @@ storySchema.statics = {
   }
 };
 
+// Hooks to insert / remove stories from the user that posted them
 storySchema.post('save', story =>
   User.updateUser(story.username, { $addToSet: { stories: story._id } })
 );
+storySchema.post('remove', story =>
+  User.updateUser(story.username, { $pull: { stories: story._id } })
+);
 
-/* Transform with .toObject to remove __v and _id from response */
+// This code removes _id and __v from query results
 if (!storySchema.options.toObject) storySchema.options.toObject = {};
 storySchema.options.toObject.transform = (doc, ret) => {
   const transformed = ret;

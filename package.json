@@ -1,6 +1,6 @@
 {
   "name": "hack-or-snooze-api",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Hacker News API Clone",
   "main": "NODE_ENV=development nodemon server/server.js",
   "scripts": {

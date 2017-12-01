@@ -3,7 +3,7 @@
  * @param {Object} json the JSON object to wrap
  */
 function formatResponse(json) {
-  delete json.password;  // if there is a password, delete it
+  delete json.password;  // if there is a password, delete it from response
   return { data: json };
 }
 
