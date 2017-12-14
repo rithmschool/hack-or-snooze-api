@@ -7,7 +7,7 @@ const { APIError, processDBError } = require('../helpers');
 const User = require('./User');
 
 // constants
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const storySchema = new Schema(
   {

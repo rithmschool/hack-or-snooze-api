@@ -1,20 +1,21 @@
 // npm packages
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+
 const SALT_WORK_FACTOR = 10;
 
 // app imports
-const { APIError, processDBError } = require("../helpers");
+const { APIError, processDBError } = require('../helpers');
 
 // constants
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    favorites: [{ type: Schema.Types.ObjectId, ref: "Story" }],
+    favorites: [{ type: Schema.Types.ObjectId, ref: 'Story' }],
     name: String,
-    password: { type: String, required: true },
-    stories: [{ type: Schema.Types.ObjectId, ref: "Story" }],
+    password: String,
+    stories: [{ type: Schema.Types.ObjectId, ref: 'Story' }],
     username: {
       type: String,
       index: true
@@ -23,20 +24,20 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", function(next) {
-  if (!this.isModified("password")) return next();
-  bcrypt
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+  return bcrypt
     .hash(this.password, SALT_WORK_FACTOR)
     .then(hash => {
       this.password = hash;
       return next();
     })
-    .catch(err => {
-      return next(err);
-    });
+    .catch(err => next(err));
 });
 
-userSchema.pre("findOneAndUpdate", function(next) {
+userSchema.pre('findOneAndUpdate', function(next) {
   const password = this.getUpdate().password;
   if (!password) {
     return next();
@@ -57,14 +58,14 @@ userSchema.statics = {
    * @param {object} newUser - an instance of User
    * @returns {Promise<User, APIError>}
    */
-  createUser({ username }) {
-    return this.findOne({ username })
+  createUser(newUser) {
+    return this.findOne({ username: newUser.username })
       .exec()
       .then(user => {
         if (user) {
           throw new APIError(
             409,
-            "User Already Exists",
+            'User Already Exists',
             `There is already a user with username '${user.username}'.`
           );
         }
@@ -85,13 +86,13 @@ userSchema.statics = {
         if (!user) {
           throw new APIError(
             404,
-            "User Not Found",
+            'User Not Found',
             `No user '${username}' found.`
           );
         }
         return Promise.resolve({
           status: 200,
-          title: "User Deleted",
+          title: 'User Deleted',
           message: `User '${username}' successfully deleted.`
         });
       })
@@ -104,14 +105,14 @@ userSchema.statics = {
    */
   readUser(username) {
     return this.findOne({ username })
-      .populate("favorites")
-      .populate("stories")
+      .populate('favorites')
+      .populate('stories')
       .exec()
       .then(user => {
         if (!user) {
           throw new APIError(
             404,
-            "User Not Found",
+            'User Not Found',
             `No user '${username}' found.`
           );
         }
@@ -132,8 +133,8 @@ userSchema.statics = {
       .skip(skip)
       .limit(limit)
       .sort({ username: 1 })
-      .populate("favorites")
-      .populate("stories")
+      .populate('favorites')
+      .populate('stories')
       .exec()
       .then(users => {
         if (users.length === 0) {
@@ -151,14 +152,14 @@ userSchema.statics = {
    */
   updateUser(username, userUpdate) {
     return this.findOneAndUpdate({ username }, userUpdate, { new: true })
-      .populate("favorites")
-      .populate("stories")
+      .populate('favorites')
+      .populate('stories')
       .exec()
       .then(user => {
         if (!user) {
           throw new APIError(
             404,
-            "User Not Found",
+            'User Not Found',
             `No user with username '${username}' found.`
           );
         }
@@ -177,22 +178,22 @@ userSchema.statics = {
    */
   addOrDeleteFavorite(username, favoriteId, action) {
     const actions = {
-      add: "$addToSet",
-      delete: "$pull"
+      add: '$addToSet',
+      delete: '$pull'
     };
     return this.findOneAndUpdate(
       { username },
       { [actions[action]]: { favorites: favoriteId } },
       { new: true }
     )
-      .populate("favorites")
-      .populate("stories")
+      .populate('favorites')
+      .populate('stories')
       .exec()
       .then(user => {
         if (!user) {
           throw new APIError(
             404,
-            "User Not Found",
+            'User Not Found',
             `No user with username '${username}' found.`
           );
         }
@@ -219,4 +220,4 @@ userSchema.options.toObject.transform = (doc, ret) => {
   return transformed;
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);
