@@ -13,7 +13,12 @@
     "type": "git",
     "url": "git+https://github.com/rithmschool/hack-or-snooze-api.git"
   },
-  "keywords": ["hackernews", "api", "expressjs", "nodejs"],
+  "keywords": [
+    "hackernews",
+    "api",
+    "expressjs",
+    "nodejs"
+  ],
   "author": "Michael Hueter",
   "license": "ISC",
   "engines": {
