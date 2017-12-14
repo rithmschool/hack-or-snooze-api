@@ -24,7 +24,7 @@ function auth(request, response, next) {
       const isValid = bcrypt.compareSync(
         request.body.data.password,
         user.password
-      ); // true
+      );
       if (!isValid) {
         throw new APIError(401, "Unauthorized", "Invalid password.");
       }

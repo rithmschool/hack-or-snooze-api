@@ -24,22 +24,20 @@ const userSchema = new Schema(
 );
 
 userSchema.pre("save", function(next) {
-  var user = this;
-  if (!user.isModified("password")) return next();
+  if (!this.isModified("password")) return next();
   bcrypt
     .hash(this.password, SALT_WORK_FACTOR)
-    .then(function(hash) {
-      user.password = hash;
+    .then(hash => {
+      this.password = hash;
       return next();
     })
-    .catch(function(err) {
+    .catch(err => {
       return next(err);
     });
 });
 
 userSchema.pre("findOneAndUpdate", function(next) {
   const password = this.getUpdate().password;
-  eval(require("locus"));
   if (!password) {
     return next();
   }
@@ -59,8 +57,8 @@ userSchema.statics = {
    * @param {object} newUser - an instance of User
    * @returns {Promise<User, APIError>}
    */
-  createUser(newUser) {
-    return this.findOne({ username: newUser.username })
+  createUser({ username }) {
+    return this.findOne({ username })
       .exec()
       .then(user => {
         if (user) {
