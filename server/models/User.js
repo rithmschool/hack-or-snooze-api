@@ -37,6 +37,22 @@ userSchema.pre("save", function(next) {
     });
 });
 
+userSchema.pre("findOneAndUpdate", function(next) {
+  const password = this.getUpdate().password;
+  eval(require("locus"));
+  if (!password) {
+    return next();
+  }
+  try {
+    const salt = bcrypt.genSaltSync();
+    const hash = bcrypt.hashSync(password, salt);
+    this.getUpdate().password = hash;
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+});
+
 userSchema.statics = {
   /**
    * Create a single new User
