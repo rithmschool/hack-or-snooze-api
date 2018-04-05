@@ -1,12 +1,12 @@
 // npm packages
-const jwt = require("jsonwebtoken");
-const { Validator } = require("jsonschema");
-const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+const { Validator } = require('jsonschema');
+const bcrypt = require('bcrypt');
 // app imports
-const { JWT_SECRET_KEY } = require("../config");
-const { User } = require("../models");
-const { APIError, formatResponse, validateSchema } = require("../helpers");
-const { authSchema } = require("../schemas");
+const { JWT_SECRET_KEY } = require('../config');
+const { User } = require('../models');
+const { APIError, formatResponse, validateSchema } = require('../helpers');
+const { authSchema } = require('../schemas');
 
 // global constants
 const v = new Validator();
@@ -14,9 +14,9 @@ const v = new Validator();
 function auth(request, response, next) {
   const validSchema = validateSchema(
     v.validate(request.body, authSchema),
-    "user"
+    'user'
   );
-  if (validSchema !== "OK") {
+  if (validSchema !== 'OK') {
     return next(validSchema);
   }
   return User.readUser(request.body.data.username)
@@ -26,16 +26,14 @@ function auth(request, response, next) {
         user.password
       );
       if (!isValid) {
-        throw new APIError(401, "Unauthorized", "Invalid password.");
+        throw new APIError(401, 'Unauthorized', 'Invalid password.');
       }
       const newToken = {
         token: jwt.sign({ username: user.username }, JWT_SECRET_KEY)
       };
       return response.json(formatResponse(newToken));
     })
-    .catch(err => {
-      next(err);
-    });
+    .catch(err => next(err));
 }
 
 module.exports = auth;

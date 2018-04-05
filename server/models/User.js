@@ -24,33 +24,25 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-userSchema.pre('save', function(next) {
+/**
+ * A wrapper around bcrypt password hashing
+ * @param {function} next callback to next Mongoose middleware
+ */
+async function _hashPassword(next) {
   if (!this.isModified('password')) {
     return next();
   }
-  return bcrypt
-    .hash(this.password, SALT_WORK_FACTOR)
-    .then(hash => {
-      this.password = hash;
-      return next();
-    })
-    .catch(err => next(err));
-});
-
-userSchema.pre('findOneAndUpdate', function(next) {
-  const password = this.getUpdate().password;
-  if (!password) {
-    return next();
-  }
   try {
-    const salt = bcrypt.genSaltSync();
-    const hash = bcrypt.hashSync(password, salt);
-    this.getUpdate().password = hash;
+    const hashed = await bcrypt.hash(this.password, SALT_WORK_FACTOR);
+    this.password = hashed;
     return next();
-  } catch (error) {
-    return next(error);
+  } catch (err) {
+    return next(err);
   }
-});
+}
+
+userSchema.pre('save', _hashPassword);
+userSchema.pre('findOneAndUpdate', _hashPassword);
 
 userSchema.statics = {
   /**
@@ -90,11 +82,11 @@ userSchema.statics = {
             `No user '${username}' found.`
           );
         }
-        return Promise.resolve({
+        return {
           status: 200,
           title: 'User Deleted',
           message: `User '${username}' successfully deleted.`
-        });
+        };
       })
       .catch(error => Promise.reject(processDBError(error)));
   },
