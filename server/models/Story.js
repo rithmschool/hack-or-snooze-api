@@ -4,7 +4,6 @@ const uuidv4 = require('uuid/v4');
 
 // app imports
 const { APIError, processDBError } = require('../helpers');
-const User = require('./User');
 
 // constants
 const { Schema } = mongoose;
@@ -149,13 +148,17 @@ storySchema.statics = {
 
 // Hooks to insert / remove stories from the user that posted them
 storySchema.post('save', story =>
-  User.updateUser(story.username, { $addToSet: { stories: story._id } })
+  mongoose
+    .model('User')
+    .updateUser(story.username, { $addToSet: { stories: story._id } })
 );
 storySchema.post('remove', story => {
   // remove from posting user's list of stories
-  User.updateUser(story.username, { $pull: { stories: story._id } });
+  mongoose
+    .model('User')
+    .updateUser(story.username, { $pull: { stories: story._id } });
   // remove from favorites for all users who have favorited the story
-  User.removeFavoriteFromAll(story._id);
+  mongoose.model('User').removeFavoriteFromAll(story._id);
 });
 
 // This code removes _id and __v from query results
