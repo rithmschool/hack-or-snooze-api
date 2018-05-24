@@ -41,8 +41,10 @@ async function _hashPassword(next) {
   }
 }
 
-userSchema.pre('save', _hashPassword);
-userSchema.pre('findOneAndUpdate', _hashPassword);
+const bound_hashPassword = _hashPassword.bind(userSchema);
+
+userSchema.pre('save', bound_hashPassword);
+userSchema.pre('findOneAndUpdate', bound_hashPassword);
 
 userSchema.statics = {
   /**
