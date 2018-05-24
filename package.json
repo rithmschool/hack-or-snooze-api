@@ -13,38 +13,33 @@
     "type": "git",
     "url": "git+https://github.com/rithmschool/hack-or-snooze-api.git"
   },
-  "keywords": [
-    "hackernews",
-    "api",
-    "expressjs",
-    "nodejs"
-  ],
+  "keywords": ["hackernews", "api", "expressjs", "nodejs"],
   "author": "Michael Hueter",
   "license": "ISC",
   "engines": {
-    "node": "9.2.0",
-    "npm": "5.5.1"
+    "node": "8.1.1",
+    "npm": "5.6.0"
   },
   "bugs": {
     "url": "https://github.com/rithmschool/hack-or-snooze-api/issues"
   },
   "homepage": "https://github.com/rithmschool/hack-or-snooze-api#readme",
   "devDependencies": {
-    "axios": "^0.17.1",
-    "eslint": "^4.12.1",
-    "nodemon": "1.12.1",
+    "axios": "^0.18.0",
+    "eslint": "^4.19.1",
+    "nodemon": "1.17.5",
     "faker": "^4.1.0",
     "locus": "^2.0.1"
   },
   "dependencies": {
-    "bcrypt": "^1.0.3",
-    "body-parser": "1.18.2",
-    "dotenv": "4.0.0",
-    "express": "4.16.2",
-    "jsonschema": "1.2.0",
-    "jsonwebtoken": "8.1.0",
-    "mongoose": "4.13.5",
-    "pm2": "2.8.0",
-    "uuid": "3.1.0"
+    "bcrypt": "2.0.1",
+    "body-parser": "1.18.3",
+    "dotenv": "5.0.1",
+    "express": "4.16.3",
+    "jsonschema": "1.2.4",
+    "jsonwebtoken": "8.2.1",
+    "mongoose": "5.1.2",
+    "pm2": "2.10.4",
+    "uuid": "3.2.1"
   }
 }

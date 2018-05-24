@@ -24,50 +24,29 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-userSchema.pre('save', async function _hashPassword(next) {
-  try {
-    const hashed = await bcrypt.hash(this.password, SALT_WORK_FACTOR);
-    this.password = hashed;
-    return next();
-  } catch (err) {
-    return next(err);
-  }
-});
-
-userSchema.pre('findOneAndUpdate', async function _hashPassword(next) {
-  if (this.isModified('password')) {
-    try {
-      const hashed = await bcrypt.hash(this.password, SALT_WORK_FACTOR);
-      this.password = hashed;
-      return next();
-    } catch (err) {
-      return next(err);
-    }
-  }
-  return next();
-});
-
 userSchema.statics = {
   /**
    * Create a single new User
    * @param {object} newUser - an instance of User
    * @returns {Promise<User, APIError>}
    */
-  createUser(newUser) {
-    return this.findOne({ username: newUser.username })
-      .exec()
-      .then(user => {
-        if (user) {
-          throw new APIError(
-            409,
-            'User Already Exists',
-            `There is already a user with username '${user.username}'.`
-          );
-        }
-      })
-      .then(() => newUser.save())
-      .then(user => user.toObject())
-      .catch(error => Promise.reject(processDBError(error)));
+  async createUser(newUser) {
+    try {
+      const user = await this.findOne({ username: newUser.username }).exec();
+      if (user) {
+        throw new APIError(
+          409,
+          'User Already Exists',
+          `There is already a user with username '${user.username}'.`
+        );
+      }
+      const hashed = await bcrypt.hash(newUser.password, SALT_WORK_FACTOR);
+      newUser.password = hashed;
+      const savedUser = await newUser.save();
+      return savedUser.toObject();
+    } catch (error) {
+      return Promise.reject(processDBError(error));
+    }
   },
   /**
    * Delete a single User
@@ -145,22 +124,32 @@ userSchema.statics = {
    * @param {Object} userUpdate - the json containing the User attributes
    * @returns {Promise<User, APIError>}
    */
-  updateUser(username, userUpdate) {
-    return this.findOneAndUpdate({ username }, userUpdate, { new: true })
-      .populate('favorites')
-      .populate('stories')
-      .exec()
-      .then(user => {
-        if (!user) {
-          throw new APIError(
-            404,
-            'User Not Found',
-            `No user with username '${username}' found.`
-          );
-        }
-        return user.toObject();
+  async updateUser(username, userUpdate) {
+    try {
+      if (userUpdate.password) {
+        userUpdate.password = await bcrypt.hash(
+          userUpdate.password,
+          SALT_WORK_FACTOR
+        );
+      }
+      const user = await this.findOneAndUpdate({ username }, userUpdate, {
+        new: true
       })
-      .catch(error => Promise.reject(processDBError(error)));
+        .populate('favorites')
+        .populate('stories')
+        .exec();
+
+      if (!user) {
+        throw new APIError(
+          404,
+          'User Not Found',
+          `No user with username '${username}' found.`
+        );
+      }
+      return user.toObject();
+    } catch (error) {
+      return Promise.reject(processDBError(error));
+    }
   },
 
   /**

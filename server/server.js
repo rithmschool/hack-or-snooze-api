@@ -24,7 +24,7 @@ mongoose.Promise = Promise;
 if (ENV === 'development') {
   mongoose.set('debug', true);
 }
-mongoose.connect(MONGODB_URI, { useMongoClient: true, autoIndex: true });
+mongoose.connect(MONGODB_URI, { autoIndex: true });
 
 // body parser setup
 app.use(bodyParser.urlencoded({ extended: true }));
