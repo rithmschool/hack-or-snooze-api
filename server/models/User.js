@@ -24,14 +24,7 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-/**
- * A wrapper around bcrypt password hashing
- * @param {function} next callback to next Mongoose middleware
- */
-async function _hashPassword(next) {
-  if (!this.isModified('password')) {
-    return next();
-  }
+userSchema.pre('save', async function _hashPassword(next) {
   try {
     const hashed = await bcrypt.hash(this.password, SALT_WORK_FACTOR);
     this.password = hashed;
@@ -39,12 +32,20 @@ async function _hashPassword(next) {
   } catch (err) {
     return next(err);
   }
-}
+});
 
-const bound_hashPassword = _hashPassword.bind(userSchema);
-
-userSchema.pre('save', bound_hashPassword);
-userSchema.pre('findOneAndUpdate', bound_hashPassword);
+userSchema.pre('findOneAndUpdate', async function _hashPassword(next) {
+  if (this.isModified('password')) {
+    try {
+      const hashed = await bcrypt.hash(this.password, SALT_WORK_FACTOR);
+      this.password = hashed;
+      return next();
+    } catch (err) {
+      return next(err);
+    }
+  }
+  return next();
+});
 
 userSchema.statics = {
   /**
